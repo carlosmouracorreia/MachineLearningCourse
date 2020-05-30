@@ -1,0 +1,7 @@
+scipy
+sympy
+matplotlib
+tensorflow
+numpy
+sklearn
+tensorflow_datasets
