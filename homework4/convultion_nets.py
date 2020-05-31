@@ -21,7 +21,7 @@ if __name__ == "__main__":
     mnist_test_y = np.asarray([instance['label'] for instance in tfds.as_numpy(mnist_data['test'])])
 
    # tfds.show_examples(mnist_info, mnist_data['test'])
-
+'''
 
     mnist_baseline_model = tf.keras.Sequential(name='mnist_baseline')
     mnist_baseline_model.add(tf.keras.layers.Input(mnist_info.features['image'].shape))
@@ -34,7 +34,6 @@ if __name__ == "__main__":
     # were making patience pretty small here... opposed to the other exercices
     earlystop = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=10, verbose=1)
     checkpoint = tf.keras.callbacks.ModelCheckpoint('mnist_baseline_best.h5', monitor='val_accuracy', verbose=1, save_best_only=True)
-
     mnist_baseline_model_train = mnist_baseline_model.fit(mnist_train_x, mnist_train_y, validation_split=0.2, callbacks=[earlystop,checkpoint], epochs=10000, batch_size=256)
 
 
@@ -55,7 +54,7 @@ if __name__ == "__main__":
     mnist_baseline_model.load_weights('mnist_baseline_best.h5')
     loss, acc = mnist_baseline_model.evaluate(mnist_test_x, mnist_test_y)
     print('Accuracy: {}'.format(acc))
-
+'''
     '''
         Convolutional layers, resulting in better accuracy now
 
@@ -69,7 +68,7 @@ if __name__ == "__main__":
         Strides parameter defaults (none is provided) to the size of the pooling window (no overlap happens ... !?)
     '''
 
-
+'''
     mnist_conv_model = tf.keras.Sequential(name='mnist_cnn')
     mnist_conv_model.add(tf.keras.layers.Input(mnist_info.features['image'].shape))
     mnist_conv_model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=4, activation='relu', padding='same', name='convolution'))
@@ -100,7 +99,7 @@ if __name__ == "__main__":
     mnist_conv_model.load_weights('mnist_conv_best.h5')
     loss, acc = mnist_conv_model.evaluate(mnist_test_x, mnist_test_y)
     print('Accuracy: {}'.format(acc))
-
+'''
 
 
     '''
@@ -118,3 +117,37 @@ if __name__ == "__main__":
                     loss start already with a value smaller than half of the training loss in the beginning
 
     '''
+
+
+mnist_conv_drop_model = tf.keras.Sequential(name='mnist_cnn_dropout')
+mnist_conv_drop_model.add(tf.keras.layers.Input(mnist_info.features['image'].shape))
+mnist_conv_drop_model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=4, activation='relu', padding='same', name='convolution'))
+mnist_conv_drop_model.add(tf.keras.layers.MaxPool2D(pool_size=2, name='pooling'))
+mnist_conv_drop_model.add(tf.keras.layers.Dropout(0.5, name='dropout'))
+mnist_conv_drop_model.add(tf.keras.layers.Flatten(name='flatten'))
+mnist_conv_drop_model.add(tf.keras.layers.Dense(mnist_info.features['label'].num_classes, activation='softmax', name='output'))
+mnist_conv_drop_model.compile(loss='sparse_categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
+mnist_conv_drop_model.summary()
+
+
+earlystop = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=10, verbose=1)
+checkpoint = tf.keras.callbacks.ModelCheckpoint('mnist_conv_drop_best.h5', monitor='val_accuracy', verbose=1, save_best_only=True)
+
+mnist_conv_drop_model_train = mnist_conv_drop_model.fit(mnist_train_x, mnist_train_y, validation_split=0.2, callbacks=[earlystop,checkpoint], epochs=10000, batch_size=256)
+
+fig, (loss_ax, acc_ax) = plt.subplots(1, 2, figsize=(20,7))
+
+loss_ax.set_title('Loss')
+loss_ax.plot(mnist_conv_model_train.history['loss'], '-r', label='Train')
+loss_ax.plot(mnist_conv_model_train.history['val_loss'], '-g', label='Validation')
+
+acc_ax.set_title('Accuracy')
+acc_ax.plot(mnist_conv_model_train.history['accuracy'], '-r', label='Train')
+acc_ax.plot(mnist_conv_model_train.history['val_accuracy'], '-g', label='Validation')
+
+plt.legend(loc=4)
+plt.show()
+
+mnist_conv_model.load_weights('mnist_conv_drop_best.h5')
+loss, acc = mnist_conv_model.evaluate(mnist_test_x, mnist_test_y)
+print('Accuracy: {}'.format(acc))
