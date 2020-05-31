@@ -21,7 +21,7 @@ if __name__ == "__main__":
     mnist_test_y = np.asarray([instance['label'] for instance in tfds.as_numpy(mnist_data['test'])])
 
    # tfds.show_examples(mnist_info, mnist_data['test'])
-'''
+    '''
 
     mnist_baseline_model = tf.keras.Sequential(name='mnist_baseline')
     mnist_baseline_model.add(tf.keras.layers.Input(mnist_info.features['image'].shape))
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     mnist_baseline_model.load_weights('mnist_baseline_best.h5')
     loss, acc = mnist_baseline_model.evaluate(mnist_test_x, mnist_test_y)
     print('Accuracy: {}'.format(acc))
-'''
+    '''
     '''
         Convolutional layers, resulting in better accuracy now
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         Strides parameter defaults (none is provided) to the size of the pooling window (no overlap happens ... !?)
     '''
 
-'''
+    '''
     mnist_conv_model = tf.keras.Sequential(name='mnist_cnn')
     mnist_conv_model.add(tf.keras.layers.Input(mnist_info.features['image'].shape))
     mnist_conv_model.add(tf.keras.layers.Conv2D(filters=16, kernel_size=4, activation='relu', padding='same', name='convolution'))
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     mnist_conv_model.load_weights('mnist_conv_best.h5')
     loss, acc = mnist_conv_model.evaluate(mnist_test_x, mnist_test_y)
     print('Accuracy: {}'.format(acc))
-'''
+    '''
 
 
     '''
@@ -116,7 +116,7 @@ if __name__ == "__main__":
                     accuracy start already with value bigger than 0 for validation set
                     loss start already with a value smaller than half of the training loss in the beginning
 
-    '''
+'''
 
 
 mnist_conv_drop_model = tf.keras.Sequential(name='mnist_cnn_dropout')
@@ -148,6 +148,6 @@ acc_ax.plot(mnist_conv_model_train.history['val_accuracy'], '-g', label='Validat
 plt.legend(loc=4)
 plt.show()
 
-mnist_conv_model.load_weights('mnist_conv_drop_best.h5')
-loss, acc = mnist_conv_model.evaluate(mnist_test_x, mnist_test_y)
+mnist_conv_drop_model.load_weights('mnist_conv_drop_best.h5')
+loss, acc = mnist_conv_drop_model.evaluate(mnist_test_x, mnist_test_y)
 print('Accuracy: {}'.format(acc))
